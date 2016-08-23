@@ -1,0 +1,13 @@
+---
+- hosts: all
+  become: true
+  vars:
+    ckan_plugins:
+      - name: "ckanext-showcase"
+        url: "{{ url_repos }}/gsplatform/ckanext-showcase.git"
+        branch: "master"
+      - name: "ckanext-geoview"
+        url: "{{ url_repos }}/gsplatform/ckanext-geoview.git"
+        branch: "gpf-V2015"
+  roles:
+    - { role: ansible-ckan-plugins }

@@ -1,0 +1,27 @@
+---
+- name: check is enable the `ckan_plugins` variable
+  fail: 
+    msg: "Need the `ckan_plugins` variable. See README.md."
+  when:
+    - ckan_plugins is not defined
+
+
+- name: add ckan extension
+  become: true
+  become_user: "{{ ckan_user_name }}"
+  pip:
+    name: "git+{{ item.url }}@{{ item.branch }}#egg={{ item.name }}"
+    virtualenv: "{{ venv_location }}"
+  with_items: "{{ ckan_plugins }}"
+  when: ckan_plugins is defined
+
+- name: Install dependencies extension 
+  become: true
+  become_user: "{{ ckan_user_name }}"
+  shell: "{{ venv_location }}/bin/pip install -r requirements.txt || {{ venv_location }}/bin/pip install -r pip-requirements.txt"
+  args:
+    chdir: "{{ venv_location }}/src/{{ item.name }}"
+  with_items: "{{ ckan_plugins }}"
+  ignore_errors: yes
+  when: ckan_plugins is defined
+
